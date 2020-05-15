@@ -9,7 +9,14 @@ import Peg from './Peg';
 		let idVal;
 		let pegClass;
 
-		for (let [key, value] of this.props.colors) {
+		console.log((this.props.colorsObject));
+		
+		const colors = new Map(Object.entries(this.props.colorsObject));
+
+		console.log(colors);
+		
+
+		for (let [key, value] of colors) {
 			idVal = 'peg-' + key;
 			pegClass = 'peg ' + value;
 			if (value === this.props.selectedPeg) {

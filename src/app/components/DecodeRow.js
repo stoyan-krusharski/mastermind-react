@@ -1,6 +1,6 @@
 import React from 'react';
 import Peg from './Peg';
-import { times } from '../utils/utils'
+import { functionalFor } from '../utils/utils'
 
 // const DecodeRow = React.createClass({
 	class DecodeRow extends React.Component {	
@@ -26,7 +26,7 @@ import { times } from '../utils/utils'
 			pegs.push(<Peg idVal={idVal} name={this.props.name} value={i + 1} key={idVal} pegClass={pegClass} isCurrentRow={this.props.isCurrentRow} activatePeg={this.props.activatePeg}/>);
 		}
 
-		times(this.props.state.pegsInRow)(generatePeg);
+		functionalFor(this.props.state.pegsInRow)(generatePeg);
 
 		return (
 			<div className='decode-row'>

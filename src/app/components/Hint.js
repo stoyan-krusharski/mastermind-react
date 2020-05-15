@@ -8,7 +8,7 @@ import React from 'react';
 
 	render () {
 		return (
-			<span className={this.props.hintClass}>
+			<span className={this.props.hintClass} title={this.props.hintTitle}>
 			</span>
 		);
 	}

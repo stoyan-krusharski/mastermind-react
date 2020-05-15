@@ -13,7 +13,7 @@ import classNames from 'classnames';
 				'success': this.props.success,
 				'failure': !this.props.success
 			});
-		const infoText = this.props.success ? 'Congratulations!' : 'GAME OVER!';
+		const infoText = this.props.success ? 'Congratulations! You win!' : 'GAME OVER! Try again :(';
 
 		return (
 			<div className={endGameInfoClass}>

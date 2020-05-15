@@ -1,5 +1,5 @@
 import React from 'react';
-import { times } from '../utils/utils'
+import { functionalFor } from '../utils/utils'
 import Rules from './Rules'
 import DecodingBoard from './DecodingBoard'
 import CodePegs from './CodePegs'
@@ -7,56 +7,79 @@ import EndGame from './EndGame'
 
 // const Mastermind = React.createClass({
 	class Mastermind extends React.Component {
-	
+
 	// getInitialState: function() {
 	constructor(props) {
+		
 		super(props);
+
+		const colors = this.getColors();
+		const selectedPeg = colors.get(0);
+
 		this.state =  {
-			code: this.getCode(), //the main code to be decoded
-			selectedPeg: this.props.colors.get(0),
+			// code: this.getCode(), //the main code to be decoded,
+			colors: colors,
+			selectedPeg: selectedPeg,
 			currentRow: 0,
 			currentGuess: new Map(),
 			exactMatches: 0,
-			valueMatches: 0,
+			colorMatches: 0,
 			pegsInRow: 4,
 			attempts: 10,
 			rules: false,
-			success: false,
-			endGame: false
+			endGame: false,
+			success: false
 		};
+
+		this.state.code = this.getCode();
+		
 	}
 
 	reloadGame = () => {
-		this.setState({ success: false });
-		this.setState({ endGame: false });
+		
 		this.setState({ code: this.getCode() });
-		this.setState({ selectedPeg: this.props.colors.get(0) });
+		this.setState({ selectedPeg: this.state.colors.get(0) });
 		this.setState({ currentRow: 0 });
 		this.setState({ currentGuess: new Map() });
 		this.setState({ exactMatches: 0 });
-		this.setState({ valueMatches: 0 });
+		this.setState({ colorMatches: 0 });
+		this.setState({ endGame: false });
+		this.setState({ success: false });
 	}
 
-	toggleRules = () => {
-		this.setState({ rules: !this.state.rules });
-	}
+	getColors = () => {
 
-	getRandomArbitrary (min = 0, max = 5) {
-		return Math.floor(Math.random() * (max - min + 1)) + min;
+		const possibleColors = new Map([[0, 'zero'], [1, 'one'], [2, 'two'], [3, 'three'], [4, 'four'], [5, 'five']])
+		let useColors = new Map();
+
+		for (let [key, value] of possibleColors) {
+			if (key < this.props.colorsNumber)
+				useColors.set(key, value);
+		}
+		
+		return useColors;
+		
 	}
 
 	getCode = () => {
 		const code = new Map();
 
 		let generateCode = (i) => {
-			code.set(i, this.props.colors.get(this.getRandomArbitrary()));
+			code.set(i, this.state.colors.get(this.getRandomIntInRange()));
 		};
-
-		times(this.props.codeLength)(generateCode);
-
-		console.log(code);
+		
+		functionalFor(this.props.codeLength)(generateCode);
 
 		return code;
+	}
+
+	getRandomIntInRange (min = 0, max = this.props.colorsNumber) {
+		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+	toggleRules = () => {
+		// this.setState({ rules: !this.state.rules });
+		this.setState((state) => ({ rules: !state.rules}));
 	}
 
 	activatePeg = (event) => {
@@ -86,7 +109,7 @@ import EndGame from './EndGame'
 		let pegs = this.state.currentGuess;
 		let foundKey;
 		let exactMatches = 0;
-		let valueMatches = 0;
+		let colorMatches = 0;
 
 		// First pass: Look for value & position matches
 		// Safely remove items if they match
@@ -103,7 +126,7 @@ import EndGame from './EndGame'
 			// attempt to find the peg in the remaining code
 			foundKey = this.keyOf(code, value);
 			if (foundKey !== -1) {
-				valueMatches++;
+				colorMatches++;
 				// remove the matched code peg, since it's been matched
 				code.delete(foundKey);
 			}
@@ -117,12 +140,13 @@ import EndGame from './EndGame'
 		}
 
 		this.setState({exactMatches: exactMatches});
-		this.setState({valueMatches: valueMatches});
+		this.setState({colorMatches: colorMatches});
 		this.setState({currentRow: this.state.currentRow + 1});
 		this.setState({currentGuess: new Map()});
 	}
 
 	render () {
+
 		return (
 			<div>
 				<h1><span className="M">M</span><span className="A">A</span><span className="S">S</span><span className="T">T</span><span className="E">E</span><span className="R">R</span><span className="MIND">MIND</span></h1>
@@ -130,7 +154,7 @@ import EndGame from './EndGame'
 
 				<div className="clearfix">
 					<DecodingBoard state={this.state} activatePeg={this.activatePeg} submitPegs={this.submitPegs}/>
-					<CodePegs selectedPeg={this.state.selectedPeg} colors={this.props.colors} activatePeg={this.activatePeg}/>
+					<CodePegs selectedPeg={this.state.selectedPeg} colorsObject={Object.fromEntries(this.state.colors)} activatePeg={this.activatePeg}/>
 				</div>
 
 				<EndGame endGame={this.state.endGame} success={this.state.success} reloadGame={this.reloadGame}/>
@@ -141,8 +165,3 @@ import EndGame from './EndGame'
 }
 
 export default Mastermind;
-
-/*
-const wrapper = document.getElementById("container");
-wrapper ? ReactDOM.render(<Form />, wrapper) : false;
-*/
